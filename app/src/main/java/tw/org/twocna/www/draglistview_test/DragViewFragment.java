@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -19,6 +23,8 @@ import android.widget.TextView;
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItem;
 
+import java.util.ArrayList;
+
 public class DragViewFragment extends Fragment {
     //-- Log --
     private static final String TAG = DragViewFragment.class.getSimpleName();
@@ -29,6 +35,10 @@ public class DragViewFragment extends Fragment {
 
     //-- UI --
     private BoardView mUI_BoardView;
+
+    //-- Cache Data --
+    private static int sCreatedItems = 0;
+    private int mColumns;
 
     //========================
     //== Constructor 建構子  ==
@@ -83,7 +93,81 @@ public class DragViewFragment extends Fragment {
         mUI_BoardView.setCustomColumnDragItem(new MyColumnDragItem(getActivity(), R.layout.column_drag_layout));
         mUI_BoardView.setSnapToColumnInLandscape(false);
         mUI_BoardView.setColumnSnapPosition(BoardView.ColumnSnapPosition.CENTER);
+
+        addColumn();
+        addColumn();
     }
+
+    private void addColumn() {
+        final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
+        int addItems = 15;
+        for (int i = 0; i < addItems; i++) {
+            long id = sCreatedItems++;
+            mItemArray.add(new Pair<>(id, "Item " + id));
+        }
+
+        final int column = mColumns;
+        final ItemAdapter listAdapter = new ItemAdapter(mItemArray, R.layout.column_item, R.id.item_layout, true);
+        final View header = View.inflate(getActivity(), R.layout.column_header, null);
+        ((TextView) header.findViewById(R.id.text)).setText("Column " + (mColumns + 1));
+        ((TextView) header.findViewById(R.id.item_count)).setText("" + addItems);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = sCreatedItems++;
+                Pair item = new Pair<>(id, "Test " + id);
+                mUI_BoardView.addItem(mUI_BoardView.getColumnOfHeader(v), 0, item, true);
+                //mBoardView.moveItem(4, 0, 0, true);
+                //mBoardView.removeItem(column, 0);
+                //mBoardView.moveItem(0, 0, 1, 3, false);
+                //mBoardView.replaceItem(0, 0, item1, true);
+                ((TextView) header.findViewById(R.id.item_count)).setText(String.valueOf(mItemArray.size()));
+            }
+        });
+        mUI_BoardView.addColumn(listAdapter, header, header, false);
+        mColumns++;
+    }
+
+    //============
+    //==  Menu  ==
+    //============
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_board, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_disable_drag).setVisible(mUI_BoardView.isDragEnabled());
+        menu.findItem(R.id.action_enable_drag).setVisible(!mUI_BoardView.isDragEnabled());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_disable_drag:
+                mUI_BoardView.setDragEnabled(false);
+                getActivity().invalidateOptionsMenu();
+                return true;
+            case R.id.action_enable_drag:
+                mUI_BoardView.setDragEnabled(true);
+                getActivity().invalidateOptionsMenu();
+                return true;
+            case R.id.action_add_column:
+                addColumn();
+                return true;
+            case R.id.action_remove_column:
+                mUI_BoardView.removeColumn(0);
+                return true;
+            case R.id.action_clear_board:
+                mUI_BoardView.clearBoard();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     //=================
     //==  DragItem  ==
