@@ -5,13 +5,9 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -23,22 +19,18 @@ import android.widget.TextView;
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItem;
 
-import java.util.ArrayList;
-
-public class DragViewFragment extends Fragment {
+/**
+ * Created by water on 2018/11/22.
+ */
+public class ActionEditorFragment extends Fragment {
     //-- Log --
-    private static final String TAG = DragViewFragment.class.getSimpleName();
+    private static final String TAG = ActionEditorFragment.class.getSimpleName();
 
     //-- Fragment --
-    public static final String FRAGMENT_TYPE = "drag_view";
-
+    public static final String FRAGMENT_TYPE = "action_editor";
 
     //-- UI --
     private BoardView mUI_BoardView;
-
-    //-- Cache Data --
-    private static int sCreatedItems = 0;
-    private int mColumns;
 
     //========================
     //== Constructor 建構子  ==
@@ -61,7 +53,7 @@ public class DragViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dragview, container, false);
+        return inflater.inflate(R.layout.fragment_action_editor, container, false);
     }
 
     @Override
@@ -78,7 +70,8 @@ public class DragViewFragment extends Fragment {
 
         //-- Initialize UI --
         initializeUI_DragList();
-        // initializeUI_Drag();
+        //initializeUI_DragList(1);
+        //initializeUI_Drag();
     }
 
     //=====================
@@ -89,92 +82,18 @@ public class DragViewFragment extends Fragment {
         mUI_BoardView.setSnapToColumnsWhenScrolling(true);
         mUI_BoardView.setSnapToColumnWhenDragging(true);
         mUI_BoardView.setSnapDragItemToTouch(true);
-        mUI_BoardView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.column_item));
-        mUI_BoardView.setCustomColumnDragItem(new MyColumnDragItem(getActivity(), R.layout.column_drag_layout));
+        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.column_item));
+        mUI_BoardView.setCustomColumnDragItem(new DragItem_Daily(getActivity(), R.layout.column_drag_layout));
         mUI_BoardView.setSnapToColumnInLandscape(false);
         mUI_BoardView.setColumnSnapPosition(BoardView.ColumnSnapPosition.CENTER);
-
-        addColumn();
-        addColumn();
     }
-
-    private void addColumn() {
-        final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
-        int addItems = 15;
-        for (int i = 0; i < addItems; i++) {
-            long id = sCreatedItems++;
-            mItemArray.add(new Pair<>(id, "Item " + id));
-        }
-
-        final int column = mColumns;
-        final ItemAdapter listAdapter = new ItemAdapter(mItemArray, R.layout.column_item, R.id.item_layout, true);
-        final View header = View.inflate(getActivity(), R.layout.column_header, null);
-        ((TextView) header.findViewById(R.id.text)).setText("Column " + (mColumns + 1));
-        ((TextView) header.findViewById(R.id.item_count)).setText("" + addItems);
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long id = sCreatedItems++;
-                Pair item = new Pair<>(id, "Test " + id);
-                mUI_BoardView.addItem(mUI_BoardView.getColumnOfHeader(v), 0, item, true);
-                //mBoardView.moveItem(4, 0, 0, true);
-                //mBoardView.removeItem(column, 0);
-                //mBoardView.moveItem(0, 0, 1, 3, false);
-                //mBoardView.replaceItem(0, 0, item1, true);
-                ((TextView) header.findViewById(R.id.item_count)).setText(String.valueOf(mItemArray.size()));
-            }
-        });
-        mUI_BoardView.addColumn(listAdapter, header, header, false);
-        mColumns++;
-    }
-
-    //============
-    //==  Menu  ==
-    //============
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_board, menu);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.action_disable_drag).setVisible(mUI_BoardView.isDragEnabled());
-        menu.findItem(R.id.action_enable_drag).setVisible(!mUI_BoardView.isDragEnabled());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_disable_drag:
-                mUI_BoardView.setDragEnabled(false);
-                getActivity().invalidateOptionsMenu();
-                return true;
-            case R.id.action_enable_drag:
-                mUI_BoardView.setDragEnabled(true);
-                getActivity().invalidateOptionsMenu();
-                return true;
-            case R.id.action_add_column:
-                addColumn();
-                return true;
-            case R.id.action_remove_column:
-                mUI_BoardView.removeColumn(0);
-                return true;
-            case R.id.action_clear_board:
-                mUI_BoardView.clearBoard();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 
     //=================
     //==  DragItem  ==
     //=================
-    private static class MyDragItem extends DragItem {
+    private static class DragItem_Action extends DragItem {
 
-        MyDragItem(Context context, int layoutId) {
+        DragItem_Action(Context context, int layoutId) {
             super(context, layoutId);
         }
 
@@ -227,9 +146,9 @@ public class DragViewFragment extends Fragment {
         }
     }
 
-    private static class MyColumnDragItem extends DragItem {
+    private static class DragItem_Daily extends DragItem {
 
-        MyColumnDragItem(Context context, int layoutId) {
+        DragItem_Daily(Context context, int layoutId) {
             super(context, layoutId);
             setSnapToTouch(false);
         }
@@ -273,6 +192,5 @@ public class DragViewFragment extends Fragment {
             dragView.animate().scaleX(1).scaleY(1).start();
         }
     }
-
 
 }
