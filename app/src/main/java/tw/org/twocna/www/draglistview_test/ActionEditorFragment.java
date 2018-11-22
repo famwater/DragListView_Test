@@ -19,13 +19,15 @@ import android.widget.TextView;
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItem;
 
-public class DragViewFragment extends Fragment {
+/**
+ * Created by water on 2018/11/22.
+ */
+public class ActionEditorFragment extends Fragment {
     //-- Log --
-    private static final String TAG = DragViewFragment.class.getSimpleName();
+    private static final String TAG = ActionEditorFragment.class.getSimpleName();
 
     //-- Fragment --
-    public static final String FRAGMENT_TYPE = "drag_view";
-
+    public static final String FRAGMENT_TYPE = "action_editor";
 
     //-- UI --
     private BoardView mUI_BoardView;
@@ -51,7 +53,7 @@ public class DragViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dragview, container, false);
+        return inflater.inflate(R.layout.fragment_action_editor, container, false);
     }
 
     @Override
@@ -68,7 +70,8 @@ public class DragViewFragment extends Fragment {
 
         //-- Initialize UI --
         initializeUI_DragList();
-        // initializeUI_Drag();
+        //initializeUI_DragList(1);
+        //initializeUI_Drag();
     }
 
     //=====================
@@ -79,8 +82,8 @@ public class DragViewFragment extends Fragment {
         mUI_BoardView.setSnapToColumnsWhenScrolling(true);
         mUI_BoardView.setSnapToColumnWhenDragging(true);
         mUI_BoardView.setSnapDragItemToTouch(true);
-        mUI_BoardView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.column_item));
-        mUI_BoardView.setCustomColumnDragItem(new MyColumnDragItem(getActivity(), R.layout.column_drag_layout));
+        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.column_item));
+        mUI_BoardView.setCustomColumnDragItem(new DragItem_Daily(getActivity(), R.layout.column_drag_layout));
         mUI_BoardView.setSnapToColumnInLandscape(false);
         mUI_BoardView.setColumnSnapPosition(BoardView.ColumnSnapPosition.CENTER);
     }
@@ -88,9 +91,9 @@ public class DragViewFragment extends Fragment {
     //=================
     //==  DragItem  ==
     //=================
-    private static class MyDragItem extends DragItem {
+    private static class DragItem_Action extends DragItem {
 
-        MyDragItem(Context context, int layoutId) {
+        DragItem_Action(Context context, int layoutId) {
             super(context, layoutId);
         }
 
@@ -143,9 +146,9 @@ public class DragViewFragment extends Fragment {
         }
     }
 
-    private static class MyColumnDragItem extends DragItem {
+    private static class DragItem_Daily extends DragItem {
 
-        MyColumnDragItem(Context context, int layoutId) {
+        DragItem_Daily(Context context, int layoutId) {
             super(context, layoutId);
             setSnapToTouch(false);
         }
@@ -189,6 +192,5 @@ public class DragViewFragment extends Fragment {
             dragView.animate().scaleX(1).scaleY(1).start();
         }
     }
-
 
 }
