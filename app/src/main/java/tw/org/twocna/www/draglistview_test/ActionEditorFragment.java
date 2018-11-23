@@ -82,10 +82,11 @@ public class ActionEditorFragment extends Fragment {
         mUI_BoardView.setSnapToColumnsWhenScrolling(true);
         mUI_BoardView.setSnapToColumnWhenDragging(true);
         mUI_BoardView.setSnapDragItemToTouch(true);
-        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.column_item));
-        mUI_BoardView.setCustomColumnDragItem(new DragItem_Daily(getActivity(), R.layout.column_drag_layout));
+        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.drag_item_action));
+        mUI_BoardView.setCustomColumnDragItem(new DragItem_Daily(getActivity(), R.layout.drag_item_daily));
         mUI_BoardView.setSnapToColumnInLandscape(false);
         mUI_BoardView.setColumnSnapPosition(BoardView.ColumnSnapPosition.CENTER);
+
     }
 
     //=================
