@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         initializeUI_Button();
 
         //-- Switch to fragment --
-        DragViewFragment oFragment = new DragViewFragment();
+        ActionEditorFragment oFragment = new ActionEditorFragment();
         fragment_Switch(oFragment, oFragment.FRAGMENT_TYPE);
     }
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     //=====================
     private void initializeUI_Button(){
         Button uiButtonLeft = findViewById(R.id.uiButtonLeft);
-        uiButtonLeft.setText("DragView");
+        uiButtonLeft.setText("Drag View");
         uiButtonLeft.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -44,18 +44,18 @@ public class MainActivity extends AppCompatActivity {
         );
 
         Button uiButtonCenter = findViewById(R.id.uiButtonCenter);
-        uiButtonCenter.setText("DragView");
+        uiButtonCenter.setText("Action Editor");
         uiButtonCenter.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        fragment_Switch(new DragViewFragment(), DragViewFragment.FRAGMENT_TYPE);
+                        fragment_Switch(new ActionEditorFragment(), ActionEditorFragment.FRAGMENT_TYPE);
                     }
                 }
         );
 
         Button uiButtonRight = findViewById(R.id.uiButtonRight);
-        uiButtonRight.setText("DragView");
+        uiButtonRight.setText("Drag View");
         uiButtonRight.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
