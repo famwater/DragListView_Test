@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItem;
+
+import java.util.ArrayList;
 
 /**
  * Created by water on 2018/11/22.
@@ -31,6 +35,10 @@ public class ActionEditorFragment extends Fragment {
 
     //-- UI --
     private BoardView mUI_BoardView;
+
+    //-- Cache Data --
+    private static int sCreatedItems = 0;
+    private int mColumns;
 
     //========================
     //== Constructor 建構子  ==
@@ -82,11 +90,43 @@ public class ActionEditorFragment extends Fragment {
         mUI_BoardView.setSnapToColumnsWhenScrolling(true);
         mUI_BoardView.setSnapToColumnWhenDragging(true);
         mUI_BoardView.setSnapDragItemToTouch(true);
-        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.drag_item_action));
+        mUI_BoardView.setCustomDragItem(new DragItem_Action(getActivity(), R.layout.column_item));
         mUI_BoardView.setCustomColumnDragItem(new DragItem_Daily(getActivity(), R.layout.drag_item_daily));
         mUI_BoardView.setSnapToColumnInLandscape(false);
         mUI_BoardView.setColumnSnapPosition(BoardView.ColumnSnapPosition.CENTER);
 
+        addColumn();
+        addColumn();
+    }
+
+    private void addColumn() {
+        final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
+        int addItems = 15;
+        for (int i = 0; i < addItems; i++) {
+            long id = sCreatedItems++;
+            mItemArray.add(new Pair<>(id, "Item " + id));
+        }
+
+        final int column = mColumns;
+        final ItemAdapter listAdapter = new ItemAdapter(mItemArray, R.layout.column_item, R.id.item_layout, true);
+        final View header = View.inflate(getActivity(), R.layout.drag_item_header, null);
+        ((TextView) header.findViewById(R.id.uiHeaderTitle)).setText("Column = " + (mColumns + 1));
+        ((TextView) header.findViewById(R.id.uiHeaderCount)).setText("" + addItems);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = sCreatedItems++;
+                Pair item = new Pair<>(id, "Item " + id);
+                mUI_BoardView.addItem(mUI_BoardView.getColumnOfHeader(v), 0, item, true);
+                //mBoardView.moveItem(4, 0, 0, true);
+                //mBoardView.removeItem(column, 0);
+                //mBoardView.moveItem(0, 0, 1, 3, false);
+                //mBoardView.replaceItem(0, 0, item1, true);
+                ((TextView) header.findViewById(R.id.uiHeaderCount)).setText(String.valueOf(mItemArray.size()));
+            }
+        });
+        mUI_BoardView.addColumn(listAdapter, header, header, false);
+        mColumns++;
     }
 
     //=================
@@ -156,24 +196,30 @@ public class ActionEditorFragment extends Fragment {
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
+            //--原作者寫死--
             LinearLayout clickedLayout = (LinearLayout) clickedView;
-            View clickedHeader = clickedLayout.getChildAt(0);
+            View uiClickedHeader = clickedLayout.getChildAt(0);
             RecyclerView clickedRecyclerView = (RecyclerView) clickedLayout.getChildAt(1);
 
-            View dragHeader = dragView.findViewById(R.id.drag_header);
-            ScrollView dragScrollView = dragView.findViewById(R.id.drag_scroll_view);
-            LinearLayout dragLayout = dragView.findViewById(R.id.drag_list);
-            dragLayout.removeAllViews();
+            //-- Update Header Content --
+            View uiDragHeader = dragView.findViewById(R.id.uiDragHeader);
+            CharSequence textTitle = ((TextView) uiClickedHeader.findViewById(R.id.uiHeaderTitle)).getText();
+            CharSequence textCount = ((TextView) uiClickedHeader.findViewById(R.id.uiHeaderCount)).getText();
+            ((TextView) uiDragHeader.findViewById(R.id.uiHeaderTitle)).setText(textTitle);
+            ((TextView) uiDragHeader.findViewById(R.id.uiHeaderCount)).setText(textCount);
 
-            ((TextView) dragHeader.findViewById(R.id.text)).setText(((TextView) clickedHeader.findViewById(R.id.text)).getText());
-            ((TextView) dragHeader.findViewById(R.id.item_count)).setText(((TextView) clickedHeader.findViewById(R.id.item_count)).getText());
+            //--
+            ScrollView uiDragScrollView = dragView.findViewById(R.id.uiDragScrollView);
+            LinearLayout uiDragList = dragView.findViewById(R.id.uiDragList);
+            uiDragList.removeAllViews();
+
             for (int i = 0; i < clickedRecyclerView.getChildCount(); i++) {
                 View view = View.inflate(dragView.getContext(), R.layout.column_item, null);
                 ((TextView) view.findViewById(R.id.text)).setText(((TextView) clickedRecyclerView.getChildAt(i).findViewById(R.id.text)).getText());
-                dragLayout.addView(view);
+                uiDragList.addView(view);
 
                 if (i == 0) {
-                    dragScrollView.setScrollY(-clickedRecyclerView.getChildAt(i).getTop());
+                    uiDragScrollView.setScrollY(-clickedRecyclerView.getChildAt(i).getTop());
                 }
             }
 
