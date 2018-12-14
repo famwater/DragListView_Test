@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/uiDragLayout"
+    >
+
+    <TextView
+        android:id="@+id/uiDragMe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Drag Me"
+        />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/uiGuideLine"
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <Spinner
+        android:id="@+id/uiSpinnerLeft"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+
+        app:layout_constraintEnd_toStartOf="@+id/uiGuideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uiDragMe" />
+
+    <Spinner
+        android:id="@+id/uiSpinnerRight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/uiGuideLine"
+        app:layout_constraintTop_toBottomOf="@+id/uiDragMe" />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/uiListLeft"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+
+        android:background="#66a3ba"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/uiGuideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uiSpinnerLeft" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/uiListRight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/uiGuideLine"
+        app:layout_constraintTop_toBottomOf="@+id/uiSpinnerRight" />
+
+</android.support.constraint.ConstraintLayout>
